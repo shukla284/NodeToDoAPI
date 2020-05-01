@@ -21,7 +21,7 @@ MongoClient.connect(dbURL, (error, client) => {
   });
 
   var deleteObject = {
-    name: "Shivam Shukla",
+    name: "xxx",
     age: 23,
     location: "Prayagraj, Uttar Pradesh"
   };
@@ -42,7 +42,7 @@ MongoClient.connect(dbURL, (error, client) => {
   // });
 
   db.collection('UserDetails').findOneAndDelete({
-    name: 'Shivam Shukla'
+    name: 'xxx'
   }).then((result) => {
     console.log('Successfully found and deleted the docs');
     console.log(JSON.stringify(result.value, undefined, 2));
@@ -51,7 +51,7 @@ MongoClient.connect(dbURL, (error, client) => {
   });
 
   // db.collection('UserDetails').find({
-  //   name: "Shivam Shukla",
+  //   name: "xxx",
   //   age: 23,
   //   location: "Prayagraj, Uttar Pradesh"
   // }).toArray().then((resultDocs) => {
@@ -62,7 +62,7 @@ MongoClient.connect(dbURL, (error, client) => {
   // });
 
   db.collection('UserDetails').find({
-    name: "Shivam Shukla",
+    name: "xxx",
     age: 23,
     location: "Prayagraj, Uttar Pradesh"
   }).count().then((counts) => {
