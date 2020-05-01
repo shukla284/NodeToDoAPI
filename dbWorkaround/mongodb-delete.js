@@ -41,35 +41,27 @@ MongoClient.connect(dbURL, (error, client) => {
   //   console.log('Error while deleting the record from collection');
   // });
 
-  db.collection('UserDetails').findOneAndDelete({
-    name: 'xxx'
-  }).then((result) => {
-    console.log('Successfully found and deleted the docs');
-    console.log(JSON.stringify(result.value, undefined, 2));
-  }, (error) => {
-     console.log('Error while finding and deleting the doc from collection', error);
-  });
-
-  // db.collection('UserDetails').find({
-  //   name: "xxx",
-  //   age: 23,
-  //   location: "Prayagraj, Uttar Pradesh"
-  // }).toArray().then((resultDocs) => {
-  //   console.log('Successfully fetched the result docs \n');
-  //   console.log(JSON.stringify(resultDocs, undefined, 2));
+  // db.collection('UserDetails').findOneAndDelete({
+  //   name: 'xxx'
+  // }).then((result) => {
+  //   console.log('Successfully found and deleted the docs');
+  //   console.log(JSON.stringify(result.value, undefined, 2));
   // }, (error) => {
-  //   console.log('Error while fetching the documents from collections', error);
+  //    console.log('Error while finding and deleting the doc from collection', error);
   // });
 
-  db.collection('UserDetails').find({
-    name: "xxx",
-    age: 23,
-    location: "Prayagraj, Uttar Pradesh"
-  }).count().then((counts) => {
-    console.log('Total Counts ', counts);
+  db.collection('UserDetails').find().toArray().then((resultDocs) => {
+    console.log('Successfully fetched the result docs \n');
+    console.log(JSON.stringify(resultDocs, undefined, 2));
   }, (error) => {
-    console.log('Error while fetching the records', error);
+    console.log('Error while fetching the documents from collections', error);
   });
+
+  // db.collection('UserDetails').find().count().then((counts) => {
+  //   console.log('Total Counts ', counts);
+  // }, (error) => {
+  //   console.log('Error while fetching the records', error);
+  // });
 
   client.close();
 });

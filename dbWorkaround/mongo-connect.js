@@ -19,7 +19,7 @@ MongoClient.connect(dbURL, (error, client) => {
   // });
 
   db.collection('UserDetails').insertOne({
-     name: 'Shivam Shukla',
+     name: 'xxx',
      age: 23,
      location: 'Prayagraj, Uttar Pradesh, India'
   }, (error, results) => {
