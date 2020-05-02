@@ -7,7 +7,6 @@ var {mongoose} = require('./db/mongooseConfig');
 var {ToDoModel} = require('./models/ToDo');
 var {UserModel} = require('./models/Users');
 
-
 var app = express();
 app.use(bodyParser.json());
 
@@ -20,9 +19,11 @@ app.post('/todos', (request, response) => {
    });
 
    todo.save().then((doc) => {
+
      console.log('Successfully added the document to collection', doc);
      response.status(200).send(doc);
    }, (error) => {
+
      console.log('Error while adding the document to the collection', error);
      response.status(400).send(error);
    });
@@ -31,3 +32,5 @@ app.post('/todos', (request, response) => {
 app.listen(3000, () => {
   console.log('Server started to run on port 3000');
 });
+
+module.exports = {app};

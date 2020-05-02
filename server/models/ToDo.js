@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-var ToDoModel = mongoose.model('ToDo', {
+var ToDoModel = mongoose.model('ToDoApp', {
   name: {
     type: String,
     required: true,
@@ -27,4 +27,4 @@ var ToDoModel = mongoose.model('ToDo', {
   }
 });
 
-module.exports = {ToDoModel};
+module.exports.ToDoModel = ToDoModel;
