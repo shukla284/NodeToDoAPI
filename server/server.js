@@ -1,24 +1,33 @@
-const mongoose = require('mongoose');
-const dbURL = 'mongodb://localhost:27017/ToDoApp';
+var express = require('express');
+var bodyParser = require('body-parser');
 
-mongoose.Promise = global.Promise;
-mongoose.connect(dbURL);
+var port = 3000;
 
-var ToDoModel = mongoose.model('ToDo', {
-  text: {type: String},
-  completed: {type: Boolean},
-  completedAt: {type: Number}
+var {mongoose} = require('./db/mongooseConfig');
+var {ToDoModel} = require('./models/ToDo');
+var {UserModel} = require('./models/Users');
+
+
+var app = express();
+app.use(bodyParser.json());
+
+app.post('/todos', (request, response) => {
+   console.log(request.body);
+
+   var todo = new ToDoModel({
+     name: request.body.name,
+     user: request.body.user
+   });
+
+   todo.save().then((doc) => {
+     console.log('Successfully added the document to collection', doc);
+     response.status(200).send(doc);
+   }, (error) => {
+     console.log('Error while adding the document to the collection', error);
+     response.status(400).send(error);
+   });
 });
 
-var newToDo = new ToDoModel({
-  text: 'Create a new To Do',
-  completed: false,
-  completedAt: 730
-});
-
-
-newToDo.save().then((doc) => {
-  console.log('Successfully added doc to collection', doc);
-}, (error) => {
-  console.log('Error while writing the document in collection', error);
+app.listen(3000, () => {
+  console.log('Server started to run on port 3000');
 });
