@@ -29,6 +29,17 @@ app.post('/todos', (request, response) => {
    });
 });
 
+
+app.get('/todos', (request, response) => {
+  ToDoModel.find().then((resultDocs) => {
+    console.log('Successfully fetched the docs from collections');
+    response.status(200).send({resultDocs});
+  }, (error) => {
+    console.log('Error while fetching the data', error);
+    response.status(400).send(error);
+  });
+});
+
 app.listen(3000, () => {
   console.log('Server started to run on port 3000');
 });
