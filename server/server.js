@@ -1,5 +1,6 @@
 var express = require('express');
 var bodyParser = require('body-parser');
+var {ObjectID} = require('mongodb');
 
 var port = 3000;
 
@@ -66,6 +67,27 @@ app.get('/users', (request, response) => {
     response.status(400).send(error);
   });
 });
+
+app.get('/todos/:id', (request, response) => {
+  var id = request.params.id;
+
+  if(!ObjectID.isValid(id))
+     response.status(404).send();
+
+  ToDoModel.findById(id).then((todo) => {
+    if (!todo) {
+      console.log('No such todo found');
+      response.status(404).send();
+    }
+    console.log('Successfully fetched the document in collection', todo);
+    response.status(200).send(todo);
+  }).catch((e) => {
+    console.log('Error while finding the doc', error);
+    response.status(400).send();
+  });
+});
+
+
 
 app.listen(3000, () => {
   console.log('Server started to run on port 3000');
