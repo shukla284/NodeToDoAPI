@@ -8,7 +8,8 @@ mongoose.Promise = global.Promise;
 //mongoose.connect(dbURL);
 
 mongoose.connect(dbURL, {
-        useNewUrlParser: true
+        useNewUrlParser: true,
+        useUnifiedTopology: true
     }, function(err, db) {
         if (err)
            return console.log('Error while connecting ', err);
