@@ -95,7 +95,7 @@ app.listen(port, () => {
   UserModel.find().then((docs) => {
     console.log('Successfully inserted the doc in the collections');
     console.log(JSON.stringify(docs, undefined, 2));
-  };
+  });
 });
 
 module.exports = {app};
