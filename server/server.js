@@ -59,6 +59,7 @@ app.get('/todos', (request, response) => {
 });
 
 app.get('/users', (request, response) => {
+  console.log('Request intercepted users ');
   UserModel.find().then((docs) => {
     console.log('Successfully inserted the doc in the collections');
     response.status(200).send(docs);
