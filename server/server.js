@@ -2,7 +2,7 @@ var express = require('express');
 var bodyParser = require('body-parser');
 var {ObjectID} = require('mongodb');
 
-var port = 3000;
+var port = process.env.PORT | 3000;
 
 var {mongoose} = require('./db/mongooseConfig');
 var {ToDoModel} = require('./models/ToDo');
@@ -80,7 +80,7 @@ app.get('/todos/:id', (request, response) => {
       response.status(404).send();
     }
     console.log('Successfully fetched the document in collection', todo);
-    response.status(200).send(todo);
+    response.status(200).send({todo});
   }).catch((e) => {
     console.log('Error while finding the doc', error);
     response.status(400).send();
@@ -89,8 +89,8 @@ app.get('/todos/:id', (request, response) => {
 
 
 
-app.listen(3000, () => {
-  console.log('Server started to run on port 3000');
+app.listen(port, () => {
+  console.log('Server started to run on port', port);
 });
 
 module.exports = {app};
