@@ -3,7 +3,7 @@ const request = require('supertest');
 const {ObjectID} = require('mongodb');
 
 const {app} = require('./../server');
-const ToDoModel = require('./../models/ToDo.js').ToDoModel;
+const {ToDoModel} = require('./../models/ToDo.js');
 
 const todos = [
   {_id: new ObjectID(), name: 'First Test ToDo'},
@@ -85,4 +85,43 @@ describe('GET /todos', () => {
      })
      .end(done);
    });
+});
+
+describe('DELETE /todo/:id', () => {
+  it('should delete one of todos', (done) => {
+    var hexID = todos[1]._id.toHexString();
+
+    request(app)
+    .delete(`/todos/${hexID}`)
+    .expect(200)
+    .expect((response) => {
+      console.log('Printing response body ', response.body.todo);
+      expect(response.body.todo._id).toBe(hexID);
+    })
+    .end((error, response) => {
+      if (error)
+         return done(error);
+
+      ToDoModel.findById(hexID).then((todo) => {
+        expect(todo).toNotExist();
+        done();
+      }).catch((e) => done(e));
+    });
+  });
+
+  it('should return 404 if the ID not found', (done) => {
+      var id = new ObjectID()._id.toHexString();
+
+      request(app)
+      .delete(`/todos/${id}`)
+      .expect(404)
+      .end(done);
+  });
+
+  it('should return 404 if object ID is invalid', (done) => {
+     request(app)
+     .delete(`/todos/126563euiwui`)
+     .expect(404)
+     .end(done);
+  });
 });

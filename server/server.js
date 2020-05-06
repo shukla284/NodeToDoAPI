@@ -78,13 +78,13 @@ app.get('/todos/:id', (request, response) => {
   ToDoModel.findById(id).then((todo) => {
     if (!todo) {
       console.log('No such todo found');
-      response.status(404).send();
+      return response.status(404).send();
     }
     console.log('Successfully fetched the document in collection', todo);
     response.status(200).send({todo});
   }).catch((e) => {
     console.log('Error while finding the doc', error);
-    response.status(400).send();
+    return response.status(400).send();
   });
 });
 
@@ -97,13 +97,13 @@ app.delete('/todos/:id', (request, response) => {
     ToDoModel.findOneAndRemove({_id: id}).then((todo) => {
       if (!todo) {
         console.log('Requested Resource not found: ID: ', id);
-        response.status(404).send();
+        return response.status(404).send();
       }
       console.log('Successfully deleted todo: ', todo);
-      response.status(200).send(todo);
+      response.status(200).send({todo});
     }, (error) => {
       console.log('Error while finding and deleting object', error);
-      response.status(400).send();
+      return response.status(400).send();
     });
 });
 
@@ -118,7 +118,7 @@ app.delete('/user/:id', (request, response) => {
         response.status(404).send();
       }
       console.log('Successfully deleted the user ID: ', id);
-      response.status(200).send(user);
+      response.status(200).send({user});
     }, (error) => {
       console.log('Error while deleting the document', error);
       response.status(400).send();
