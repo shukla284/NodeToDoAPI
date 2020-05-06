@@ -88,6 +88,42 @@ app.get('/todos/:id', (request, response) => {
   });
 });
 
+app.delete('/todos/:id', (request, response) => {
+    var id = request.params.id;
+
+    if (!ObjectID.isValid(id))
+       response.status(404).send();
+
+    ToDoModel.findOneAndRemove({_id: id}).then((todo) => {
+      if (!todo) {
+        console.log('Requested Resource not found: ID: ', id);
+        response.status(404).send();
+      }
+      console.log('Successfully deleted todo: ', todo);
+      response.status(200).send(todo);
+    }, (error) => {
+      console.log('Error while finding and deleting object', error);
+      response.status(400).send();
+    });
+});
+
+app.delete('/user/:id', (request, response) => {
+    var id = request.params.id;
+    if (!ObjectID.isValid(id))
+       response.status(404).send();
+
+    UserModel.findOneAndRemove({_id: id}).then((user) => {
+      if (!user) {
+        console.log('No such user found, ID : ', id);
+        response.status(404).send();
+      }
+      console.log('Successfully deleted the user ID: ', id);
+      response.status(200).send(user);
+    }, (error) => {
+      console.log('Error while deleting the document', error);
+      response.status(400).send();
+    });
+});
 
 
 app.listen(port, () => {
