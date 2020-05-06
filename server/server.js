@@ -128,10 +128,6 @@ app.delete('/user/:id', (request, response) => {
 
 app.listen(port, () => {
   console.log('Server started to run on port', port);
-  UserModel.find().then((docs) => {
-    console.log('Successfully inserted the doc in the collections');
-    console.log(JSON.stringify(docs, undefined, 2));
-  });
 });
 
 module.exports = {app};
