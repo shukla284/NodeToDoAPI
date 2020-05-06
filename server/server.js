@@ -1,3 +1,4 @@
+var _ = require('lodash');
 var express = require('express');
 var bodyParser = require('body-parser');
 var {ObjectID} = require('mongodb');
@@ -16,7 +17,8 @@ app.post('/todos', (request, response) => {
 
    var todo = new ToDoModel({
      name: request.body.name,
-     user: request.body.user
+     user: request.body.user,
+     createdAt: new Date().getTime()
    });
 
    todo.save().then((doc) => {
@@ -125,6 +127,37 @@ app.delete('/user/:id', (request, response) => {
     });
 });
 
+app.patch('/todos/:id', (request, response) => {
+  var id = request.params.id;
+  var body = _.pick(request.body, ['name', 'completed']);
+
+  if (!ObjectID.isValid(id)){
+    console.log('Invalid ID Patch Request');
+    return response.status(404).send();
+  }
+
+  if (_.isBoolean(body.completed) && body.completed)
+      body.completedAt = new Date().getTime();
+  else
+      body.completedAt = null, body.completed = false;
+
+  ToDoModel.findByIdAndUpdate(id, {
+    $set: body
+  }, {new: true})
+  .then((todo) => {
+    if (!todo) {
+      console.log('No record for the patch request found');
+      return response.status(404).send();
+    }
+
+    console.log('Successfully updated the document', todo);
+    response.status(200).send({todo});
+
+  }).catch((e) => {
+    console.log('Error while updating the record', e);
+    response.status(400).send();
+  });
+});
 
 app.listen(port, () => {
   console.log('Server started to run on port', port);

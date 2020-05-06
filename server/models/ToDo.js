@@ -12,12 +12,12 @@ var ToDoModel = mongoose.model('ToDoApp', {
     default: false,
   },
   completedAt: {
-    type: Date,
+    type: Number,
     default: null
   },
   createdAt: {
-    type: Date,
-    default: Date.now
+    type: Number,
+    default: null
   },
   user: {
     type: String,
