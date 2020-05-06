@@ -6,8 +6,8 @@ const {app} = require('./../server');
 const {ToDoModel} = require('./../models/ToDo.js');
 
 const todos = [
-  {_id: new ObjectID(), name: 'First Test ToDo'},
-  {_id: new ObjectID(), name: 'Second Test ToDo'}
+  {_id: new ObjectID(), name: 'First Test ToDo', completed: false, completedAt: 121133},
+  {_id: new ObjectID(), name: 'Second Test ToDo', completed: false, completedAt: 1233}
 ]
 // beforeEach((done) => {
 //   ToDoModel.deleteMany({}).then(() => done());
@@ -124,4 +124,47 @@ describe('DELETE /todo/:id', () => {
      .expect(404)
      .end(done);
   });
+});
+
+
+describe('PATCH /todo', () => {
+  it('should update the todo', (done) => {
+      var id = todos[1]._id.toHexString();
+      var text = 'Newer text pushed';
+
+      request(app)
+      .patch(`/todos/${id}`)
+      .send({
+        completed: true,
+        name: text
+      })
+      .expect(200)
+      .expect((response) => {
+         expect(response.body.todo.name).toBe(text);
+         expect(response.body.todo.completed).toBe(true);
+         expect(response.body.todo.completedAt).toBeA('number');
+      })
+      .end(done);
+  });
+
+  it('should clear completedAt when completed is false', (done) => {
+      var id = todos[1]._id.toHexString();
+      var text = "This must be the text";
+
+      request(app)
+      .patch(`/todos/${id}`)
+      .send({
+         name: text,
+         completed: false
+      })
+      .expect(200)
+      .expect((response) => {
+        expect(response.body.todo.name).toBe(text);
+        expect(response.body.todo.completed).toBe(false);
+        expect(response.body.todo.completedAt).toNotExist();
+      })
+      .end(done);
+  });
+
+
 });
