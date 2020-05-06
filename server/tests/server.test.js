@@ -8,10 +8,7 @@ const {ToDoModel} = require('./../models/ToDo.js');
 const todos = [
   {_id: new ObjectID(), name: 'First Test ToDo', completed: false, completedAt: 121133},
   {_id: new ObjectID(), name: 'Second Test ToDo', completed: false, completedAt: 1233}
-]
-// beforeEach((done) => {
-//   ToDoModel.deleteMany({}).then(() => done());
-// });
+];
 
 beforeEach((done) => {
   ToDoModel.deleteMany().then(() => {
@@ -29,7 +26,7 @@ describe('POST/todos', () => {
     .send({name: text, user: username})
     .expect(200)
     .expect((response) => {
-      expect(response.body.name).toBe(text);
+      expect(response.body.todo.name).toBe(text);
     })
     .end((error, response) => {
       if (error)
@@ -95,7 +92,6 @@ describe('DELETE /todo/:id', () => {
     .delete(`/todos/${hexID}`)
     .expect(200)
     .expect((response) => {
-      console.log('Printing response body ', response.body.todo);
       expect(response.body.todo._id).toBe(hexID);
     })
     .end((error, response) => {
