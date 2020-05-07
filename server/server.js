@@ -29,19 +29,17 @@ app.post('/todos', (request, response) => {
    });
 });
 
-app.post('/user', (request, response) => {
-  var user = new UserModel({
-    username: request.body.username,
-    email: request.body.email
-  });
+// x-auth : Custom header not neccsarily supported by Http
+// header is sent as the key value pair
+app.post('/users', (request, response) => {
+   var body = _.pick(request.body, ['email', 'password']);
+   var user = new UserModel(body);
 
-  user.save().then((user) => {
-     response.status(200).send({user});
-  }, (error) => {
-    response.status(400).send(error);
-  });
+   user.save().then((user) => {
+     return user.generateAuthToken();
+   }).then((token) => response.status(200).header('x-auth', token).send({user}))
+   .catch((error) => response.status(400).send(error));
 });
-
 
 app.get('/todos', (request, response) => {
   ToDoModel.find().then((resultDocs) => {
@@ -52,8 +50,8 @@ app.get('/todos', (request, response) => {
 });
 
 app.get('/users', (request, response) => {
-  UserModel.find().then((docs) => {
-    response.status(200).send(docs);
+  UserModel.find().then((users) => {
+    response.status(200).send({users});
   }, (error) => {
     response.status(400).send(error);
   });
