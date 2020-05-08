@@ -104,10 +104,9 @@ UserSchema.methods.toJSON = function() {
 UserSchema.methods.generateAuthToken = function() {
   // Arrow function don't bind this keyword and here we need them
   var user = this;
-  var access = 'auth';
-  var token = jwt.sign({_id: user._id, access}, 'qweerty874398349').toString();
+  var token = jwt.sign({_id: user._id, auth: 'auth'}, 'qweerty874398349').toString();
 
-  user.tokens.push({auth: access, token});
+  user.tokens.push({auth: 'auth', token});
 
   return user.save().then(() => {
      return token;
