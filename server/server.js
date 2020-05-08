@@ -5,11 +5,13 @@ var express = require('express');
 var bodyParser = require('body-parser');
 var {ObjectID} = require('mongodb');
 
+
 var port = process.env.PORT;
 
 var {mongoose} = require('./db/mongooseConfig');
 var {ToDoModel} = require('./models/ToDo');
 var {UserModel} = require('./models/Users');
+var {authenticate} = require('./middleware/authenticate');
 
 var app = express();
 app.use(bodyParser.json());
@@ -129,6 +131,11 @@ app.patch('/todos/:id', (request, response) => {
   }).catch((e) => {
     response.status(400).send();
   });
+});
+
+// private route
+app.get('/user/me', authenticate, (request, response) => {
+    response.status(200).send(request.user);
 });
 
 app.listen(port, () => {

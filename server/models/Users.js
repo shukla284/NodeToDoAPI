@@ -39,6 +39,41 @@ var UserSchema = new mongoose.Schema({
 
 });
 
+UserSchema.statics.findByToken = function(token) {
+   // this points to the overall model
+   var User = this;
+   var decoded;
+
+   // this will return a promise that will resolve depending upon whether we get the
+   // things correctly from the database.
+   // If findOne succeeds then it would return the fulfilled promise otherwise that
+   // would be rejected at all.
+   try{
+      // this ensures the validity if it doesn't lies into the catch block
+      decoded = jwt.verify(token, 'qweerty874398349');
+   }
+   catch(e) {
+     // here promise reject case is directly called and surely this will be calling
+     // in the reject block of the calling point or the catch block of calling point
+     return Promise.reject();
+   }
+
+   // this is a promise in itself we can handle the resolution and rejection at point of call
+   // if this call will succeeds then the resolve case will be callled otherwise
+   // the reject case will be called.
+
+   // Here there is no certainity of being resolved or rejected since that depends
+   // upon the case of the findOne being successful or not.
+
+   console.log('Decoding successful', decoded._id);
+   console.log('User Token fetched ', token);
+   return User.findOne({
+     '_id' : decoded._id,
+     'tokens.token': token,
+     'tokens.auth': 'auth'
+   });
+};
+
 UserSchema.methods.toJSON = function() {
   var user = this;
   var userObject = user.toObject();
