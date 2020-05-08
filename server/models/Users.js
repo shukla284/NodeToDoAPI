@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const validator = require('validator');
 const jwt = require('jsonwebtoken');
 const _ = require('lodash');
+const bcrypt = require('bcryptjs');
 
 //Tokens serve as the value which the users will use for accessing the resources
 // Everytime they don't need to send username password to access the resources
@@ -73,6 +74,25 @@ UserSchema.statics.findByToken = function(token) {
      'tokens.auth': 'auth'
    });
 };
+
+UserSchema.pre('save', function (next) {
+   // this will be similar to trigger like thing
+   // reference to single inserted record is being made
+   var user = this;
+
+   if (user.isModified('password')) {
+      bcrypt.genSalt(10, (error, salt) => {
+        if (error)
+           return console.log('Error while generating salt');
+        bcrypt.hash(user.password, salt, (error, result) => {
+          user.password = result;
+          next();
+        });
+      });
+   }
+   else
+      next();
+});
 
 UserSchema.methods.toJSON = function() {
   var user = this;
