@@ -4,7 +4,7 @@ var _ = require('lodash');
 var express = require('express');
 var bodyParser = require('body-parser');
 var {ObjectID} = require('mongodb');
-
+var bcrypt = require('bcryptjs');
 
 var port = process.env.PORT;
 
@@ -136,6 +136,16 @@ app.patch('/todos/:id', (request, response) => {
 // private route
 app.get('/user/me', authenticate, (request, response) => {
     response.status(200).send(request.user);
+});
+
+app.post('/user/login', (request, response) => {
+    var body = _.pick(request.body, ['email', 'password']);
+
+    UserModel.findByCredentials(body.email, body.password).then((user) => {
+      return user.generateAuthToken().then((token) => {
+        response.header('x-auth', token).send({user});
+      });
+    }).catch((error) => response.status(400).send());
 });
 
 app.listen(port, () => {

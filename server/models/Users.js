@@ -40,6 +40,24 @@ var UserSchema = new mongoose.Schema({
 
 });
 
+UserSchema.statics.findByCredentials = function(email, password) {
+  var User = this;
+
+  return User.findOne({email}).then((user) => {
+    if (!user)
+       return Promise.reject();
+
+    return new Promise((resolve, reject) => {
+      bcrypt.compare(password, user.password, (error, result) => {
+        if (result)
+          resolve(user);
+        else
+          reject();
+      });
+    });
+  });
+};
+
 UserSchema.statics.findByToken = function(token) {
    // this points to the overall model
    var User = this;
