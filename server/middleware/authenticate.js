@@ -17,7 +17,7 @@ var authenticate = (request, response, next)=> {
     }).catch((e) => {
       // if the promise is not resolved or any error exists then for surely
       // this will be returning 401 case out here.
-      response.status(401).send();
+      response.status(401).send(e);
     });
 };
 
