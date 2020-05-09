@@ -69,7 +69,7 @@ UserSchema.statics.findByToken = function(token) {
    // would be rejected at all.
    try{
       // this ensures the validity if it doesn't lies into the catch block
-      decoded = jwt.verify(token, 'qweerty874398349');
+      decoded = jwt.verify(token, process.env.JWT_SECRET);
    }
    catch(e) {
      // here promise reject case is directly called and surely this will be calling
@@ -122,7 +122,7 @@ UserSchema.methods.toJSON = function() {
 UserSchema.methods.generateAuthToken = function() {
   // Arrow function don't bind this keyword and here we need them
   var user = this;
-  var token = jwt.sign({_id: user._id, auth: 'auth'}, 'qweerty874398349').toString();
+  var token = jwt.sign({_id: user._id, auth: 'auth'}, process.env.JWT_SECRET).toString();
 
   user.tokens.push({auth: 'auth', token});
 

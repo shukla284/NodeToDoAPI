@@ -1,2 +1,3 @@
 node_modules/
 dbWorkaround/WriteUp
+server/config/config.json

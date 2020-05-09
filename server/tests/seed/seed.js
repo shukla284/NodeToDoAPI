@@ -16,12 +16,12 @@ const users = [{
   _id: userOneID,
   email: 'userOne@gmail.com',
   password: 'userOnePassword',
-  tokens: [{auth: 'auth', token: jwt.sign({_id: userOneID, auth: 'auth'}, 'qweerty874398349').toString()}]
+  tokens: [{auth: 'auth', token: jwt.sign({_id: userOneID, auth: 'auth'}, process.env.JWT_SECRET).toString()}]
 }, {
   _id: userTwoID,
   email: 'userTwo@gmail.com',
   password: 'userTwoPassword',
-  tokens: [{auth: 'auth', token: jwt.sign({_id: userTwoID, auth: 'auth'}, 'qweerty874398349').toString()}]
+  tokens: [{auth: 'auth', token: jwt.sign({_id: userTwoID, auth: 'auth'}, process.env.JWT_SECRET).toString()}]
 }];
 
 const populateTodos = (done) => {
