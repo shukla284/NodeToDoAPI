@@ -19,11 +19,9 @@ var ToDoModel = mongoose.model('ToDoApp', {
     type: Number,
     default: null
   },
-  user: {
-    type: String,
-    required: false,
-    trim: true,
-    minlength: 1
+  _created: {
+    type: mongoose.Schema.Types.ObjectId,
+    required: true
   }
 });
 

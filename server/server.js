@@ -16,12 +16,12 @@ var {authenticate} = require('./middleware/authenticate');
 var app = express();
 app.use(bodyParser.json());
 
-app.post('/todos', (request, response) => {
+app.post('/todos', authenticate, (request, response) => {
 
    var todo = new ToDoModel({
      name: request.body.name,
-     user: request.body.user,
-     createdAt: new Date().getTime()
+     createdAt: new Date().getTime(),
+     _created: request.user._id
    });
 
    todo.save().then((todo) => {
@@ -43,9 +43,9 @@ app.post('/users', (request, response) => {
    .catch((error) => response.status(400).send(error));
 });
 
-app.get('/todos', (request, response) => {
-  ToDoModel.find().then((resultDocs) => {
-    response.status(200).send({resultDocs});
+app.get('/todos', authenticate, (request, response) => {
+  ToDoModel.find({_created: request.user._id}).then((todos) => {
+    response.status(200).send({todos});
   }, (error) => {
     response.status(400).send(error);
   });

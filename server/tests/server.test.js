@@ -14,11 +14,11 @@ beforeEach(populateTodos);
 describe('POST/todos', () => {
   it('should create a new todo', (done) => {
     var text = 'Testing in progress'
-    var username = 'Kabir Singh';
 
     request(app)
     .post('/todos')
-    .send({name: text, user: username})
+    .send({name: text})
+    .set('x-auth', users[0].tokens[0].token)
     .expect(200)
     .expect((response) => {
       expect(response.body.todo.name).toBe(text);
@@ -30,7 +30,6 @@ describe('POST/todos', () => {
       ToDoModel.find().then((todos) => {
         expect(todos.length).toBe(3);
         expect(todos[2].name).toBe(text);
-        expect(todos[2].user).toBe(username);
         done();
       }, (error) => {
         done(error);
@@ -42,6 +41,7 @@ describe('POST/todos', () => {
   it('should not allow the invalid data body', (done) => {
     request(app)
     .post('/todos')
+    .set('x-auth', users[0].tokens[0].token)
     .send()
     .expect(400)
     .end((error, resposne) => {
@@ -61,9 +61,10 @@ describe('GET /todos', () => {
    it('should get all the todos ', (done) => {
      request(app)
      .get('/todos')
+     .set('x-auth', users[0].tokens[0].token)
      .expect(200)
      .expect((response) => {
-       expect(response.body.resultDocs.length).toBe(2);
+       expect(response.body.todos.length).toBe(1);
      })
      .end(done);
    });
