@@ -72,10 +72,37 @@ describe('GET /todos', () => {
    it('should return todo doc', (done) => {
      request(app)
      .get(`/todos/${todos[0]._id.toHexString()}`)
+     .set('x-auth', users[0].tokens[0].token)
      .expect(200)
      .expect((response) => {
        expect(response.body.todo.name).toBe(todos[0].name);
      })
+     .end(done);
+   });
+
+   it('should not return a todo created by other user', (done) => {
+     request(app)
+     .get(`/todos/${todos[0]._id.toHexString()}`)
+     .set('x-auth', users[1].tokens[0].token)
+     .expect(404)
+     .end(done);
+   });
+
+   it('should return 404 if no todo found', (done) => {
+     var fakeID = new ObjectID().toHexString();
+
+     request(app)
+     .get(`/todos/${fakeID}`)
+     .set('x-auth', users[0].tokens[0].token)
+     .expect(404)
+     .end(done);
+   });
+
+   it('should return 404 for non-object IDs', (done) => {
+     request(app)
+     .get('/todos/1234')
+     .set('x-auth', users[0].tokens[0].token)
+     .expect(404)
      .end(done);
    });
 });
@@ -86,6 +113,7 @@ describe('DELETE /todo/:id', () => {
 
     request(app)
     .delete(`/todos/${hexID}`)
+    .set('x-auth', users[1].tokens[0].token)
     .expect(200)
     .expect((response) => {
       expect(response.body.todo._id).toBe(hexID);
@@ -101,11 +129,29 @@ describe('DELETE /todo/:id', () => {
     });
   });
 
+  it('should not delete the todo not owned by user', (done) => {
+    request(app)
+    .delete(`/todos/${todos[0]._id.toHexString()}`)
+    .set('x-auth', users[1].tokens[0].token)
+    .expect(404)
+    .end((error, response) => {
+      if(error)
+         return done(error);
+
+      ToDoModel.findOne({_id: todos[0]._id.toHexString()})
+      .then((todo) => {
+        expect(todo).toExist();
+        done();
+      }).catch((error) => done(error));
+    });
+  });
+
   it('should return 404 if the ID not found', (done) => {
       var id = new ObjectID()._id.toHexString();
 
       request(app)
       .delete(`/todos/${id}`)
+      .set('x-auth', users[0].tokens[0].token)
       .expect(404)
       .end(done);
   });
@@ -113,6 +159,7 @@ describe('DELETE /todo/:id', () => {
   it('should return 404 if object ID is invalid', (done) => {
      request(app)
      .delete(`/todos/126563euiwui`)
+     .set('x-auth', users[0].tokens[0].token)
      .expect(404)
      .end(done);
   });
@@ -126,6 +173,7 @@ describe('PATCH /todo', () => {
 
       request(app)
       .patch(`/todos/${id}`)
+      .set('x-auth', users[1].tokens[0].token)
       .send({
         completed: true,
         name: text
@@ -139,12 +187,32 @@ describe('PATCH /todo', () => {
       .end(done);
   });
 
+  it('should not update the todo if it is created by other user', (done) => {
+    var name = "Updated Text here";
+    var completed = true;
+
+    request(app)
+    .patch(`/todos/${todos[0]._id.toHexString()}`)
+    .send({name, completed})
+    .set('x-auth', users[1].tokens[0].token)
+    .expect(404)
+    .end((error, response) => {
+      if (error)
+         return done(error);
+      ToDoModel.findOne({_id: todos[0]._id.toHexString()}).then((todo) =>{
+        expect(todo.name).toNotBe(name);
+        done();
+      }).catch((error) => done(error));
+    });
+  });
+
   it('should clear completedAt when completed is false', (done) => {
       var id = todos[1]._id.toHexString();
       var text = "This must be the text";
 
       request(app)
       .patch(`/todos/${id}`)
+      .set('x-auth', users[1].tokens[0].token)
       .send({
          name: text,
          completed: false
@@ -243,7 +311,7 @@ describe('POST user/login', () => {
          return done();
 
       UserModel.findById(users[1]._id).then((user) => {
-        expect(user.tokens[0]).toInclude({
+        expect(user.tokens[1]).toInclude({
           auth: 'auth',
           token: response.headers['x-auth']
         });
@@ -265,7 +333,7 @@ describe('POST user/login', () => {
           return done(error);
 
       UserModel.findById(users[1]._id).then((user) => {
-        expect(user.tokens.length).toBe(0);
+        expect(user.tokens.length).toBe(1);
         done();
       }).catch((error) => done(error));
      });

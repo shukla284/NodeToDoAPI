@@ -59,13 +59,16 @@ app.get('/users', (request, response) => {
   });
 });
 
-app.get('/todos/:id', (request, response) => {
+app.get('/todos/:id', authenticate, (request, response) => {
   var id = request.params.id;
 
   if(!ObjectID.isValid(id))
      response.status(404).send();
 
-  ToDoModel.findById(id).then((todo) => {
+  ToDoModel.findOne({
+      _id: id,
+      _created: request.user._id
+    }).then((todo) => {
     if (!todo) {
       return response.status(404).send();
     }
@@ -75,13 +78,16 @@ app.get('/todos/:id', (request, response) => {
   });
 });
 
-app.delete('/todos/:id', (request, response) => {
+app.delete('/todos/:id', authenticate, (request, response) => {
     var id = request.params.id;
 
     if (!ObjectID.isValid(id))
        response.status(404).send();
 
-    ToDoModel.findOneAndRemove({_id: id}).then((todo) => {
+    ToDoModel.findOneAndRemove({
+      _id: id,
+      _created: request.user._id
+      }).then((todo) => {
       if (!todo) {
         return response.status(404).send();
       }
@@ -106,7 +112,7 @@ app.delete('/user/:id', (request, response) => {
     });
 });
 
-app.patch('/todos/:id', (request, response) => {
+app.patch('/todos/:id', authenticate, (request, response) => {
   var id = request.params.id;
   var body = _.pick(request.body, ['name', 'completed']);
 
@@ -119,7 +125,10 @@ app.patch('/todos/:id', (request, response) => {
   else
       body.completedAt = null, body.completed = false;
 
-  ToDoModel.findByIdAndUpdate(id, {
+  ToDoModel.findOneAndUpdate({
+    _id: id,
+    _created: request.user._id
+  }, {
     $set: body
   }, {new: true})
   .then((todo) => {

@@ -12,7 +12,6 @@ const todos = [
   {_id: new ObjectID(), name: 'Second Test ToDo', completed: false, completedAt: 1233, _created: userTwoID}
 ];
 
-
 const users = [{
   _id: userOneID,
   email: 'userOne@gmail.com',
@@ -22,6 +21,7 @@ const users = [{
   _id: userTwoID,
   email: 'userTwo@gmail.com',
   password: 'userTwoPassword',
+  tokens: [{auth: 'auth', token: jwt.sign({_id: userTwoID, auth: 'auth'}, 'qweerty874398349').toString()}]
 }];
 
 const populateTodos = (done) => {
