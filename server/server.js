@@ -148,6 +148,13 @@ app.post('/user/login', (request, response) => {
     }).catch((error) => response.status(400).send());
 });
 
+// we will be deleting token here
+app.delete('/users/me/token', authenticate, (request, response) => {
+  request.user.removeToken(request.token).then(() => {
+    response.status(200).send();
+  }, () => response.status(400).send());
+});
+
 app.listen(port, () => {
   console.log('Server started to run on port', port);
 });
